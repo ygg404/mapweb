@@ -1,0 +1,505 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<!--框架必需start-->
+<script src="~/Content/scripts/jquery/jquery-1.10.2.min.js"></script>
+<link href="~/Content/styles/font-awesome.min.css" rel="stylesheet" />
+<link href="~/Content/scripts/plugins/jquery-ui/jquery-ui.min.css" rel="stylesheet" />
+<script src="~/Content/scripts/plugins/jquery-ui/jquery-ui.min.js"></script>
+<!--框架必需end-->
+<!--bootstrap组件start-->
+<link href="~/Content/scripts/bootstrap/bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/scripts/bootstrap/bootstrap.extension.css" rel="stylesheet" />
+<script src="~/Content/scripts/bootstrap/bootstrap.min.js"></script>
+
+<script src="~/Content/scripts/jquery/jquery-2.0.3.min.js"></script>
+<script src="~/Content/scripts/plugins/echarts/echarts.js"></script>
+<script src="~/Content/scripts/plugins/echarts/china.js"></script>
+<script src="~/Content/scripts/plugins/charts/Chart.js"></script>
+<script src="~/Content/scripts/plugins/uploadify/ajaxfileupload.js"></script>
+<script>
+    $(function () {
+        reBindUploadFile();
+    })
+
+    //bp各省地图显示
+    function BPMapShow(FeeingAreaYearList) {
+        var citydata = [
+            { name: '', value: 0 },
+        ];
+        var myChart = echarts.init(document.getElementById('bp-china-map'));
+        function convertData(data) {
+            var res = [];
+
+            for (var i = 0; i < data.length; i++) {
+                var geoCoord = geoCoordMap[data[i].name];
+                if (geoCoord) {
+
+                    res.push({
+                        name: data[i].name + ":(" + data[i].value + ")",
+                        value: geoCoord.concat(data[i].value)
+                    });
+
+                }
+            }
+            return res;
+        }
+
+        option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} "
+            },
+            visualMap: {
+                min: 0,
+                max: 1500,
+                left: 'left',
+                top: 'bottom',
+                text: ['High', 'Low'],
+                seriesIndex: [1],
+                inRange: {
+                    color: ['#e0ffff', '#0f6edd']
+                },
+                show: false,
+                calculable: true
+            },
+            toolbox: {
+                show: true,
+                orient: 'vertical',
+                left: 'right',
+                top: 'center',
+                feature: {
+                    dataView: { readOnly: false },
+                    restore: {},
+                    saveAsImage: {}
+                }
+            },
+            geo: {
+                map: 'china',
+                roam: true,
+                show: false,
+                label: {
+                    normal: {
+                        show: true,
+                        textStyle: {
+                            color: 'rgba(0,0,0,0.5)'
+                        }
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        borderColor: 'rgba(0, 0, 0, 0.7)'
+                    },
+                    emphasis: {
+                        areaColor: null,
+                        shadowOffsetX: 0,
+                        shadowOffsetY: 0,
+                        shadowBlur: 10,
+                        borderWidth: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.8)'
+                    }
+                }
+            },
+            series: [
+                {
+                    name: '查询次数',
+                    type: 'scatter',
+                    coordinateSystem: 'geo',
+                    data: convertData(citydata),
+                    roam: true,
+
+                    label: {
+                        normal: {
+                            formatter: '{b}',
+                            position: 'right',
+                            fontSize: 15,
+                            show: true
+                        },
+                        emphasis: {
+                            show: false
+                        },
+
+                    },
+                    itemStyle: {
+                        label: {
+                            fontSize: 5,
+                            show: true
+                        },
+                        normal: {
+                            color: '#FF0000'
+                        }
+                    },
+
+                },
+             {
+                 name: '查询次数',
+                 type: 'map',
+                 mapType: 'china',
+                 geoIndex: 1,
+                 zoom: 1.25,
+                 roam: true,
+                 label: {
+                     normal: {
+                         show: true,
+                         formatter: function (params) {
+                             var valueType = 'valueDown';
+
+                             if (params.value == 0) {
+                                 return params.name;
+                             }
+                             else {
+                                 return params.name
+                                     + '{' + valueType + '|' + '(' + params.value + ')' + '}';
+                             }
+                         },
+
+                         fontSize: 16,
+                         rich: {
+                             valueUp: {
+                                 color: '#019D2D',
+                                 fontSize: 18
+                             },
+                             valueDown: {
+                                 color: 'red',
+                                 fontSize: 16
+                             }
+                         }
+                     },
+
+                     emphasis: {
+                         show: true,
+                         position: 'center',
+                         textStyle: {
+                             fontSize: '20',
+                             fontWeight: 'bold'
+                         }
+
+                     }
+                 },
+                 data: [
+                      { name: '北京', value: 0 },
+                      { name: '天津', value: 0, },
+                      { name: '上海', value: 0 },
+                      { name: '重庆', value: 0 },
+                      { name: '河北', value: 0 },
+                      { name: '河南', value: 0 },
+                      { name: '云南', value: 0 },
+                      { name: '辽宁', value: 0 },
+                      { name: '黑龙江', value: 0 },
+                      { name: '湖南', value: 0 },
+                      { name: '安徽', value: 0 },
+                      { name: '山东', value: 0 },
+                      { name: '新疆', value: 0 },
+                      { name: '江苏', value: 0 },
+                      { name: '浙江', value: 0 },
+                      { name: '江西', value: 0 },
+                      { name: '湖北', value: 0 },
+                      { name: '广西', value: 0 },
+                      { name: '甘肃', value: 0 },
+                      { name: '山西', value: 0 },
+                      { name: '内蒙古', value: 0 },
+                      { name: '陕西', value: 0 },
+                      { name: '吉林', value: 0 },
+                      { name: '福建', value: 0 },
+                      { name: '贵州', value: 0 },
+                      { name: '广东', value: 0 },
+                      { name: '青海', value: 0 },
+                      { name: '西藏', value: 0 },
+                      { name: '四川', value: 0 },
+                      { name: '宁夏', value: 0 },
+                      { name: '海南', value: 0 },
+                      { name: '台湾', value: 0 },
+                      { name: '香港', value: 0 },
+                      { name: '澳门', value: 0 }
+                 ]
+             }
+            ]
+        };
+        data = FeeingAreaYearList;
+        //省分析
+        option.tooltip = {};
+        option.geo.show = false;
+        option.series[1].geoIndex = 1;
+        for (var i = 0 ; i < data.length; i++) {
+            for (var j = 0; j < option.series[1].data.length; j++) {
+                if (data[i].areaName.indexOf(option.series[1].data[j].name) != -1) {
+                    if (data[i].value == null) {
+                        option.series[1].data[j].value = 0;
+                    }
+                    else {
+                        option.series[1].data[j].value = data[i].value;
+                    }
+                }
+            }
+        }
+
+        myChart.setOption(option);
+
+
+    }
+
+    //嘉实多各省地图显示
+    function JSDMapShow(FeeingAreaYearList) {
+        var citydata = [
+            { name: '', value: 0 },
+        ];
+        var myChart = echarts.init(document.getElementById('jsd-china-map'));
+        function convertData(data) {
+            var res = [];
+
+            for (var i = 0; i < data.length; i++) {
+                var geoCoord = geoCoordMap[data[i].name];
+                if (geoCoord) {
+
+                    res.push({
+                        name: data[i].name + ":(" + data[i].value + ")",
+                        value: geoCoord.concat(data[i].value)
+                    });
+
+                }
+            }
+            return res;
+        }
+
+        option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} "
+            },
+            visualMap: {
+                min: 0,
+                max: 1500,
+                left: 'left',
+                top: 'bottom',
+                text: ['High', 'Low'],
+                seriesIndex: [1],
+                inRange: {
+                    color: ['#e0ffff', '#0f6edd']
+                },
+                show: false,
+                calculable: true
+            },
+            toolbox: {
+                show: true,
+                orient: 'vertical',
+                left: 'right',
+                top: 'center',
+                feature: {
+                    dataView: { readOnly: false },
+                    restore: {},
+                    saveAsImage: {}
+                }
+            },
+            geo: {
+                map: 'china',
+                roam: true,
+                show: false,
+                label: {
+                    normal: {
+                        show: true,
+                        textStyle: {
+                            color: 'rgba(0,0,0,0.5)'
+                        }
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        borderColor: 'rgba(0, 0, 0, 0.7)'
+                    },
+                    emphasis: {
+                        areaColor: null,
+                        shadowOffsetX: 0,
+                        shadowOffsetY: 0,
+                        shadowBlur: 10,
+                        borderWidth: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.8)'
+                    }
+                }
+            },
+            series: [
+                {
+                    name: '查询次数',
+                    type: 'scatter',
+                    coordinateSystem: 'geo',
+                    data: convertData(citydata),
+                    roam: true,
+
+                    label: {
+                        normal: {
+                            formatter: '{b}',
+                            position: 'right',
+                            fontSize: 15,
+                            show: true
+                        },
+                        emphasis: {
+                            show: false
+                        },
+
+                    },
+                    itemStyle: {
+                        label: {
+                            fontSize: 5,
+                            show: true
+                        },
+                        normal: {
+                            color: '#FF0000'
+                        }
+                    },
+
+                },
+             {
+                 name: '查询次数',
+                 type: 'map',
+                 mapType: 'china',
+                 geoIndex: 1,
+                 zoom: 1.25,
+                 roam: true,
+                 label: {
+                     normal: {
+                         show: true,
+                         formatter: function (params) {
+                             var valueType = 'valueDown';
+
+                             if (params.value == 0) {
+                                 return params.name;
+                             }
+                             else {
+                                 return params.name
+                                     + '{' + valueType + '|' + '(' + params.value + ')' + '}';
+                             }
+                         },
+
+                         fontSize: 16,
+                         rich: {
+                             valueUp: {
+                                 color: '#019D2D',
+                                 fontSize: 18
+                             },
+                             valueDown: {
+                                 color: 'red',
+                                 fontSize: 16
+                             }
+                         }
+                     },
+
+                     emphasis: {
+                         show: true,
+                         position: 'center',
+                         textStyle: {
+                             fontSize: '20',
+                             fontWeight: 'bold'
+                         }
+
+                     }
+                 },
+                 data: [
+                      { name: '北京', value: 0 },
+                      { name: '天津', value: 0, },
+                      { name: '上海', value: 0 },
+                      { name: '重庆', value: 0 },
+                      { name: '河北', value: 0 },
+                      { name: '河南', value: 0 },
+                      { name: '云南', value: 0 },
+                      { name: '辽宁', value: 0 },
+                      { name: '黑龙江', value: 0 },
+                      { name: '湖南', value: 0 },
+                      { name: '安徽', value: 0 },
+                      { name: '山东', value: 0 },
+                      { name: '新疆', value: 0 },
+                      { name: '江苏', value: 0 },
+                      { name: '浙江', value: 0 },
+                      { name: '江西', value: 0 },
+                      { name: '湖北', value: 0 },
+                      { name: '广西', value: 0 },
+                      { name: '甘肃', value: 0 },
+                      { name: '山西', value: 0 },
+                      { name: '内蒙古', value: 0 },
+                      { name: '陕西', value: 0 },
+                      { name: '吉林', value: 0 },
+                      { name: '福建', value: 0 },
+                      { name: '贵州', value: 0 },
+                      { name: '广东', value: 0 },
+                      { name: '青海', value: 0 },
+                      { name: '西藏', value: 0 },
+                      { name: '四川', value: 0 },
+                      { name: '宁夏', value: 0 },
+                      { name: '海南', value: 0 },
+                      { name: '台湾', value: 0 },
+                      { name: '香港', value: 0 },
+                      { name: '澳门', value: 0 }
+                 ]
+             }
+            ]
+        };
+        data = FeeingAreaYearList;
+        //省分析
+        option.tooltip = {};
+        option.geo.show = false;
+        option.series[1].geoIndex = 1;
+        for (var i = 0 ; i < data.length; i++) {
+            for (var j = 0; j < option.series[1].data.length; j++) {
+                if (data[i].areaName.indexOf(option.series[1].data[j].name) != -1) {
+                    if (data[i].value == null) {
+                        option.series[1].data[j].value = 0;
+                    }
+                    else {
+                        option.series[1].data[j].value = data[i].value;
+                    }
+                }
+            }
+        }
+
+        myChart.setOption(option);
+
+
+    }
+
+ function reBindUploadFile() {
+    $('#uploadFile').change(function () {
+        //上传规格图标
+        $.ajaxFileUpload({
+            url: "/Home/UploadifyLocalFile",
+            secureuri: false,
+            fileElementId: 'uploadFile',
+            dataType: 'json',
+            success: function (data) {
+                $('#bp_area').attr("src", data["bp_area"].replace(/amp;/g,""));
+                $('#jsd_area').attr("src", data["jsd_area"].replace(/amp;/g, ""));
+                JSDMapShow(data["jsd_p"]);
+                BPMapShow(data["bp_p"]);
+                reBindUploadFile();
+
+            }
+        });
+    });
+}
+</script>
+
+<input type="file" name="uploadFile" id="uploadFile" />
+<div style="width:100%;">
+    <div style="width:49%;height:400px;float:left; display:inline;">
+        <div><span style="color:blue;">BP各区查询次数</span></div>
+        <div>
+            <img id="bp_area" style="max-width:95%;max-height:380px;" src=""/>
+        </div>
+    </div>
+    <div style="width:49%;height:400px;float:left; display:inline;">
+        <div><span style="color:blue;">嘉实多各区查询次数</span></div>
+        <div>
+            <img id="jsd_area" style="max-width:95%;max-height:380px;" src="" />
+        </div>
+    </div>
+
+    <div style="width:98%;height:700px;float:left; display:inline;">
+        <div><span style="color:blue;">BP各省查询次数</span></div>
+        <div id="bp-china-map" style="width: 90%; height: 680px; margin-left:5%; ">
+        </div>
+    </div>
+
+    <div style="width:98%;height:700px;float:left; display:inline;">
+        <div><span style="color:blue;">嘉实多各省查询次数</span></div>
+        <div id="jsd-china-map" style="width: 90%; height: 680px; margin-left:5%; ">
+        </div>
+    </div>
+</div>
